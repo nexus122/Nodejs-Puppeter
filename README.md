@@ -18,6 +18,7 @@ Pasos:
 - En ficheros muy largos a partir de la linea 8000 no traduce bien, quizas tiene que ver con el tamaño del array o con el navegador que abre puppeter, que despues de mucho tiempo se buguee y haya que reiniciarlo.
 
 ## ✔️ Por hacer
-- [ ] Ver como podemos reiniciar el navegador de puppeter
-- [ ] Refactorizar el codigo y hacerlo mas optimo
-- [ ] Ver si hay alguna alternativa para solo hacer el bucle recursivo una vez.
+- [x] Ver como podemos reiniciar el navegador de puppeter
+- [x] Refactorizar el codigo y hacerlo mas optimo
+- [ ] Borrar un archivo de la capreta **jsons_pentientes_de_traduccion** al crear el archivo en **jsons_traducidos**
+- [ ] Hacer un test con multiples jsons largos para ver cuales son las limitaciónes.

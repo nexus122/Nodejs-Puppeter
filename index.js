@@ -72,11 +72,21 @@ for (var b = 0; b < ficheros.length; b++) {
         let sleep_time; // Tiempo que descansa el puppeter segun el nº de textos
 
         let inicio = 0;
-        let final = 1000;
+        let final = 0;
 
+        if(total_texts > 1000){
+            final = 1000;
+        }else{
+            final = total_texts;
+        }
+        
         for (let z = 0; z < final; z++) {
+
+            if(final > total_texts) break;
+            
             console.log("------------------------------------------------------------------------------");
             console.log("Navegador Nº: ", (z+1), " Se reinicia cada: ", final," Lineas traducidas para evitar problemas de traduccion");
+
             if(z == 0){
                 inicio = 0;
                 final = final;
