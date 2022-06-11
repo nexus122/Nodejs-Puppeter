@@ -13,3 +13,11 @@ Pasos:
 5. _Haz palomitas, esto puede ir bastante lento segun el tamaño del json y el numero de textos dentro._
 6. En la consola aparecera cada frase que se va traduciendo, el fichero al que pertenece, por cual va y cuantas quedan, ademas del porcentaje de completado!
 7. Poco a poco veras que se van creando ficheros .json en la carpeta **json_traducidos**.
+
+## 🐛 Bugs
+- En ficheros muy largos a partir de la linea 8000 no traduce bien, quizas tiene que ver con el tamaño del array o con el navegador que abre puppeter, que despues de mucho tiempo se buguee y haya que reiniciarlo.
+
+## ✔️ Por hacer
+- [ ] Ver como podemos reiniciar el navegador de puppeter
+- [ ] Refactorizar el codigo y hacerlo mas optimo
+- [ ] Ver si hay alguna alternativa para solo hacer el bucle recursivo una vez.
