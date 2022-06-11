@@ -97,9 +97,7 @@ for (var b = 0; b < ficheros.length; b++) {
                         //console.log(`Traducción: ${ficheros[id]} ${translated_texts}`);
                         try{
                             translated_texts[aux] = translated_texts[aux].trim();
-                        }catch(e){
-                            translated_texts[aux] = translated_texts[aux];
-                        }
+                        }catch(e){}
                         json[key] = translated_texts[aux];
                         aux++;
                     }
@@ -133,11 +131,11 @@ for (var b = 0; b < ficheros.length; b++) {
                 arr_translated_texts.push(text[i]);
             } else {          
                 
-                if(i != 1 && i != 2){
+                if(id != 1 && id != 2){
                     if(largo < 10) sleep_time = 600;                    
-                    else if(largo < 100) sleep_time = 700;
-                    else if(largo < 200) sleep_time = 800;
-                    else if(largo < 300) sleep_time = 1000;
+                    else if(largo < 100) sleep_time = 900;
+                    else if(largo < 200) sleep_time = 1000;
+                    else if(largo < 300) sleep_time = 1200;
                     else if(largo < 400) sleep_time = 1600;
                     else if(largo < 800) sleep_time = 2000;
                 }
@@ -149,6 +147,7 @@ for (var b = 0; b < ficheros.length; b++) {
                 await page.waitForSelector(`${textarea_input}`);
                 // Vaciamos el texto
                 await page.evaluate(() => document.querySelector(".lmt__source_textarea").value = "");
+                await page.screenshot({path: `/screenShots/${files[id]}_${i}.png`});
                 // Escribimos el texto en ingles en el textarea
                 await page.type(`${textarea_input}`, texts[i]);
                 // Hacemos focus en el textarea
