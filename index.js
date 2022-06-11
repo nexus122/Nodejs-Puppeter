@@ -1,62 +1,16 @@
 /* 1. Cargamos librerias*/
 const puppeteer = require('puppeteer');
-const fs = require('fs');
-let firstTime = Date.now();
-let lastTime;
-let ficheros = leerDirectorio("./jsons_pendentes_de_traduccion");
-console.log(ficheros);
+const funciones = require("./funciones.js");
 
-/* Funciones globales */
-// Lectura de directorio
-function leerDirectorio(path) {
-    let resp = fs.readdirSync(path, function (err, archivos) {
-        if (err) {
-            onError(err);
-            return;
-        }
-        return archivos;
-    });
-    return resp;
-}
+/* Obtenemos la lista de ficheros del directorio */
+let ficheros = funciones.leerDirectorio("./jsons_pendentes_de_traduccion");
 
-// Escritura de nuevos jsons
-function escribirJson(json, name) {
-    //console.log("Nombre: ", name);
-    fs.writeFile(`./json_traducidos/${name}`, json, (err) => {
-        if (err) {
-            console.error(err)
-            return
-        }
-    });
-    lastTime = Date.now();
-    console.log("Tiempo de ejecucion: ", secondsToTime(lastTime - firstTime));
-}
-/* Traducir tiempo */
-var secondsToTime = function (s) {
+/* Establecemos variables de configuración */
+let lastTime; firstTime = Date.now();
 
-    function addZ(n) {
-      return (n<10? '0':'') + n;
-    }
-
-    var ms = s % 1000;
-    s = (s - ms) / 1000;
-    var secs = s % 60;
-    s = (s - secs) / 60;
-    var mins = s % 60;
-    var hrs = (s - mins) / 60;
-
-    return addZ(hrs) + ':' + addZ(mins) + ':' + addZ(secs);
-  }
-
-// Funcion para esperar x tiempo con puppeter
-function delay(time) {
-    return new Promise(function (resolve) {
-        setTimeout(resolve, time);
-    });
-}
-
-/* Bucle de archivos */
+/* Bucle de archivos da una vuelta por cada archivo que existe y ejecuta las recursividades. */
 for (var b = 0; b < ficheros.length; b++) {
+
     console.log("Iniciando la traducción del fichero: ", ficheros[b]);
     const text = require(`./jsons_pendentes_de_traduccion/${ficheros[b]}`);
 
@@ -84,7 +38,7 @@ for (var b = 0; b < ficheros.length; b++) {
     }
 
     /* Funcion de traducción recursiva*/
-    let aux = 0;
+    let aux = 0; // Contador de recursividades para saber que texto estamos traduciendo
     function traducciónRecursiva(json, translated_texts, id) {
         try {
             let keys = Object.keys(json);
@@ -95,9 +49,9 @@ for (var b = 0; b < ficheros.length; b++) {
                         traducciónRecursiva(json[key], translated_texts, id);
                     } else {
                         // console.log(`Traducción: ${ficheros[id]} ${translated_texts}`);
-                        try{
+                        try {
                             translated_texts[aux] = translated_texts[aux].trim();
-                        }catch(e){}
+                        } catch (e) { }
                         json[key] = translated_texts[aux];
                         aux++;
                     }
@@ -108,70 +62,98 @@ for (var b = 0; b < ficheros.length; b++) {
         }
     }
 
-
     /* Puppeter Traducción a la pagina   */
     async function traducir(texts, id) {
-                
-        let total_texts = texts.length;
-        console.log("Textos por traducir totales: ", total_texts);
+
         let arr_translated_texts = [];
-        let sleep_time = 1500;
+        let total_texts = texts.length;
+        console.log("Nº deTextos: ", total_texts);
 
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
+        let sleep_time; // Tiempo que descansa el puppeter segun el nº de textos
 
-        await page.goto('https://www.deepl.com/es/translator');
+        let inicio = 0;
+        let final = 1000;
 
-        for (let i = 0; i < texts.length; i++) {
+        for (let z = 0; z < final; z++) {
+            console.log("------------------------------------------------------------------------------");
+            console.log("Navegador Nº: ", (z+1), " Se reinicia cada: ", final," Lineas traducidas para evitar problemas de traduccion");
+            if(z == 0){
+                inicio = 0;
+                final = final;
+            }else{
+                inicio = final;
+                final = final + final;
+            }                        
 
-            // Si el texto tiene menos de 4 palabras nos lo saltamos hasta el siguiente punto
-            let largo = texts[i].length;
-            if (largo <= 3 && texts[i].toLowerCase() != "age") {
-                // Si el texto es demasiado corto no lo traducimos pero lo metemos en el array                
-                arr_translated_texts.push(text[i]);
-            } else {          
-                
-                if(id != 1 && id != 2){
-                    if(largo < 10) sleep_time = 800;                    
-                    else if(largo < 100) sleep_time = 900;
-                    else if(largo < 200) sleep_time = 1000;
-                    else if(largo < 300) sleep_time = 1200;
-                    else if(largo < 400) sleep_time = 1600;
-                    else if(largo < 800) sleep_time = 2000;
+            /* Abrir el navegador */
+            const browser = await puppeteer.launch();
+            /* Abrir una nueva pagina */
+            const page = await browser.newPage();
+
+            /* Ir a Deepl  */
+            await page.goto('https://www.deepl.com/es/translator');
+
+            /* Hacemos un bucle en funcion de cada json. */
+            for (let i = inicio; i < final; i++) {
+
+                // Si el texto tiene menos de 4 palabras nos lo saltamos hasta el siguiente punto
+                let largo;
+                try{
+                    largo = texts[i].length;
+                }catch(e){
+                    largo = 0;
                 }
-                
-                let textarea_input = ".lmt__source_textarea";
-                //let textarea_output = "lmt__target_textarea";
+                if (largo <= 3) {
+                    // Si el texto es demasiado corto no lo traducimos pero lo metemos en el array                
+                    arr_translated_texts.push(text[i]);
+                } else {
+                    /* Si el largo es mayor de 3 y no es la palabra "age" podemos pasar */
 
-                // Esperamos que exista el textarea
-                await page.waitForSelector(`${textarea_input}`);
-                // Vaciamos el texto
-                await page.evaluate(() => document.querySelector(".lmt__source_textarea").value = "");
-                await delay(100);
-                //await page.screenshot({path: `/screenShots/${files[id]}_${i}.png`});
-                // Escribimos el texto en ingles en el textarea
-                await page.type(`${textarea_input}`, texts[i]);
-                // Hacemos focus en el textarea
-                await page.focus(`${textarea_input}`);
-                // Pulsamos enter
-                await page.keyboard.press(' ');
+                    if (id != 1 && id != 2) {
+                        if (largo < 10) sleep_time = 800;
+                        else if (largo < 100) sleep_time = 900;
+                        else if (largo < 200) sleep_time = 1000;
+                        else if (largo < 300) sleep_time = 1200;
+                        else if (largo < 400) sleep_time = 1600;
+                        else if (largo < 800) sleep_time = 2000;
+                    }
+                    
+                    if(i == inicio) sleep_time = 2000 // La primera vez siempre tarda mas.                    
 
-                // Esperamos x tiempo
-                await delay(sleep_time);       
+                    let textarea_input = ".lmt__source_textarea";
+                    //let textarea_output = "lmt__target_textarea";
 
-                // Esperamos al selector del textarea ya traducido
-                await page.waitForSelector('.lmt__target_textarea');
-                // Conseguimos el texto traducido
-                let texto_traducido = await page.evaluate(() => document.querySelector(".lmt__target_textarea").value);
+                    // Esperamos que exista el textarea
+                    await page.waitForSelector(`${textarea_input}`);
+                    // Vaciamos el texto
+                    await page.evaluate(() => document.querySelector(".lmt__source_textarea").value = "");
+                    // await page.screenshot({ path: `./screenShoots/${ficheros[id].replace(".json", "")}_${i}.png` });
+                    // Escribimos el texto en ingles en el textarea
+                    await page.type(`${textarea_input}`, texts[i]);
+                    // Hacemos focus en el textarea
+                    await page.focus(`${textarea_input}`);
+                    // Pulsamos enter
+                    await page.keyboard.press(' ');
 
-                // Insertamos el texto traducido en un array                
-                console.log(`\x1b[31m  ${ficheros[id]} \x1b[0m -> ${((i * 100)/total_texts).toFixed(2)}%  \t CO: \x1b[33m${texts[i].length} - \x1b[0m ST: \x1b[33m${sleep_time}\x1b[0m \t   Num: \x1b[36m${i}\x1b[0m de \x1b[36m${ total_texts }\x1b[0m ->  \t TT:  \x1b[32m${texto_traducido}\x1b[0m`);
-                arr_translated_texts.push(texto_traducido);
+                    // Esperamos x tiempo
+                    await funciones.delay(sleep_time);
+
+                    // Esperamos al selector del textarea ya traducido
+                    await page.waitForSelector('.lmt__target_textarea');
+                    // Conseguimos el texto traducido
+                    let texto_traducido = await page.evaluate(() => document.querySelector(".lmt__target_textarea").value);
+
+                    // Insertamos el texto traducido en un array                
+                    console.log(`\x1b[31m  ${ficheros[id]} \x1b[0m -> ${((i * 100) / total_texts).toFixed(2)}%  \t CO: \x1b[33m${texts[i].length} - \x1b[0m ST: \x1b[33m${sleep_time}\x1b[0m \t   Num: \x1b[36m${(i+1)}\x1b[0m de \x1b[36m${total_texts}\x1b[0m ->  \t TT:  \x1b[32m${texto_traducido}\x1b[0m`);
+                    arr_translated_texts.push(texto_traducido);
+                }
             }
+            await browser.close();
         }
 
-        await browser.close();
+
         return { texts: arr_translated_texts, id: id };
+
     };
 
     /* FUNCIONALIDADES */
@@ -185,6 +167,6 @@ for (var b = 0; b < ficheros.length; b++) {
         console.log("Se ha iniciado la traducción de los textos, por favor espere...")
         traducciónRecursiva(text, data.texts, data.id);
         //console.log(ficheros[data.id - 1], data.id, (data.id - 1));
-        escribirJson(JSON.stringify(text), ficheros[data.id]);
+        funciones.escribirJson(JSON.stringify(text), ficheros[data.id]);
     });
 }

@@ -1,4 +1,5 @@
 node_modules/
 banquillo_json/
-/json_traducidos/
-/json_pendientes_de_traduccion/
+json_traducidos/
+json_pendientes_de_traduccion/
+screenShoots/
