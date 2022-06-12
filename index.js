@@ -3,30 +3,32 @@ const puppeteer = require('puppeteer');
 const funciones = require("./funciones.js");
 
 /* Obtenemos la lista de ficheros del directorio */
-let ficheros = funciones.leerDirectorio("./jsons_pendentes_de_traduccion");
+let ficheros = funciones.encontrar_ficheros_json("./jsons_pendentes_de_traduccion");
 
-/* Establecemos variables de configuración */
-let lastTime; firstTime = Date.now();
+/* Medición de tiempo para calcular cuanto ha tardado */
+let firstTime = Date.now(); // Tiempo inicial que se crea al cargar el script
 
 /* Bucle de archivos da una vuelta por cada archivo que existe y ejecuta las recursividades. */
 for (var b = 0; b < ficheros.length; b++) {
 
+    let aux = 0; // Contador de recursividades para saber que texto estamos traduciendo
+    
     console.log("Iniciando la traducción del fichero: ", ficheros[b]);
-    const text = require(`./jsons_pendentes_de_traduccion/${ficheros[b]}`);
+    const json_english = require(`./jsons_pendentes_de_traduccion/${ficheros[b]}`);
 
     /* Array de textos no traducidos */
     let array_no_translated_texts = [];
     //console.log("Fichero: ", ficheros[i], "Arrays: ", array_no_translated_texts);
 
     /* Funciones recursivas para leer jsons */
-    function recursividad(json) {
+    function buscador_de_textos(json) {
         try {
             let keys = Object.keys(json);
             if (keys.length >= 1) {
                 keys.forEach(key => {
                     if (typeof json[key] != "string") {
                         //console.log("Recursi: ", json[key]);
-                        recursividad(json[key]);
+                        buscador_de_textos(json[key]);
                     }
                     else if (typeof json[key] == "string") {
                         //console.log("Intro: ", json[key]);
@@ -37,16 +39,15 @@ for (var b = 0; b < ficheros.length; b++) {
         } catch (e) { }
     }
 
-    /* Funcion de traducción recursiva*/
-    let aux = 0; // Contador de recursividades para saber que texto estamos traduciendo
-    function traducciónRecursiva(json, translated_texts, id) {
+    /* Funcion de traducción recursiva*/    
+    function traducción_recursiva(json, translated_texts, id) {
         try {
             let keys = Object.keys(json);
             if (keys.length >= 1) {
                 keys.forEach(key => {
                     if (typeof json[key] != "string") {
                         //console.log("Intro:", json[key]);
-                        traducciónRecursiva(json[key], translated_texts, id);
+                        traducción_recursiva(json[key], translated_texts, id);
                     } else {
                         // console.log(`Traducción: ${ficheros[id]} ${translated_texts}`);
                         try {
@@ -63,19 +64,20 @@ for (var b = 0; b < ficheros.length; b++) {
     }
 
     /* Puppeter Traducción a la pagina   */
-    async function traducir(texts, id) {
+    async function traductor_de_textos(texts, id) {
 
         let arr_translated_texts = [];
         let total_texts = texts.length;
         console.log("Nº deTextos: ", total_texts);
 
+        /* Configuración para el bucle */
         let sleep_time; // Tiempo que descansa el puppeter segun el nº de textos
-
         let inicio = 0;
         let final = 0;
+        let intervalo = 1000;
 
-        if(total_texts > 1000){
-            final = 1000;
+        if(total_texts > intervalo){
+            final = intervalo;
         }else{
             final = total_texts;
         }
@@ -85,14 +87,14 @@ for (var b = 0; b < ficheros.length; b++) {
             if(final > total_texts) break;
             
             console.log("------------------------------------------------------------------------------");
-            console.log("Navegador Nº: ", (z+1), " Se reinicia cada: ", final," Lineas traducidas para evitar problemas de traduccion");
+            console.log("Navegador Nº: ", (z+1), " Se reinicia cada: ", intervalo," Lineas traducidas para evitar problemas de traduccion");
 
             if(z == 0){
                 inicio = 0;
                 final = final;
             }else{
                 inicio = final;
-                final = final + final;
+                final = final + 1000;
             }                        
 
             /* Abrir el navegador */
@@ -115,10 +117,11 @@ for (var b = 0; b < ficheros.length; b++) {
                 }
                 if (largo <= 3) {
                     // Si el texto es demasiado corto no lo traducimos pero lo metemos en el array                
-                    arr_translated_texts.push(text[i]);
+                    arr_translated_texts.push(json_english[i]);
                 } else {
                     /* Si el largo es mayor de 3 y no es la palabra "age" podemos pasar */
 
+                    //  Hacemos un calculo aproximado de cuanto le llevara a la pagina traducir las palabras para que nos nos queden cortadas por cogerlas antes de tiempo
                     if (id != 1 && id != 2) {
                         if (largo < 10) sleep_time = 800;
                         else if (largo < 100) sleep_time = 900;
@@ -127,17 +130,19 @@ for (var b = 0; b < ficheros.length; b++) {
                         else if (largo < 400) sleep_time = 1600;
                         else if (largo < 800) sleep_time = 2000;
                     }
-                    
-                    if(i == inicio) sleep_time = 2000 // La primera vez siempre tarda mas.                    
+                    // Si es la primera palabra le damos tiempo a que cargue la pagina con la calma.
+                    if(i == inicio) sleep_time = 2000 // La primera vez siempre tarda mas.
 
-                    let textarea_input = ".lmt__source_textarea";
-                    //let textarea_output = "lmt__target_textarea";
+                    let textarea_input = ".lmt__source_textarea"; // Selección del textarea
 
                     // Esperamos que exista el textarea
                     await page.waitForSelector(`${textarea_input}`);
                     // Vaciamos el texto
                     await page.evaluate(() => document.querySelector(".lmt__source_textarea").value = "");
+
+                    // Esto existe si queremos una foto de la pagina para ver si se ve bien.
                     // await page.screenshot({ path: `./screenShoots/${ficheros[id].replace(".json", "")}_${i}.png` });
+
                     // Escribimos el texto en ingles en el textarea
                     await page.type(`${textarea_input}`, texts[i]);
                     // Hacemos focus en el textarea
@@ -154,29 +159,35 @@ for (var b = 0; b < ficheros.length; b++) {
                     let texto_traducido = await page.evaluate(() => document.querySelector(".lmt__target_textarea").value);
 
                     // Insertamos el texto traducido en un array                
-                    console.log(`\x1b[31m  ${ficheros[id]} \x1b[0m -> ${((i * 100) / total_texts).toFixed(2)}%  \t CO: \x1b[33m${texts[i].length} - \x1b[0m ST: \x1b[33m${sleep_time}\x1b[0m \t   Num: \x1b[36m${(i+1)}\x1b[0m de \x1b[36m${total_texts}\x1b[0m ->  \t TT:  \x1b[32m${texto_traducido}\x1b[0m`);
-                    arr_translated_texts.push(texto_traducido);
+                    console.table(`\x1b[31m${ficheros[id]} \x1b[0m -> ${((i * 100) / total_texts).toFixed(2)}%  \t Caracteres: \x1b[33m${texts[i].length} \x1b[0m -  Delay: \x1b[33m${sleep_time}\x1b[0m \t \x1b[36m${(i+1)}\x1b[0m de \x1b[36m${total_texts}\x1b[0m ->  \tTraducción: \x1b[32m${texto_traducido}\x1b[0m`);
+
+                    arr_translated_texts.push(texto_traducido); // Introducimos el texto traducido en el array de textos traducidos.
+
                 }
             }
             await browser.close();
         }
 
-
+        // Devolvemos el array de textos traducidos y un id para saber que fichero es.
         return { texts: arr_translated_texts, id: id };
 
     };
 
     /* FUNCIONALIDADES */
-    // Enviar a conseguir los textos
+    // Lee el json y guarda los textos en un array
+    buscador_de_textos(json_english);
 
-    recursividad(text);
+    // Funcion que recibe los textos y los reescribe en el json.
+    traductor_de_textos(array_no_translated_texts, b).then(function (data) {
+        
+        // Recorremos el json, comparamos los campos donde encuentra textos con la posición de texto del array y lo introducimos.
+        traducción_recursiva(json_english, data.texts, data.id);
 
-    // Enviar textos para traducir
-    traducir(array_no_translated_texts, b).then(function (data) {
-        console.log("Buscador de textos finalizado");
-        console.log("Se ha iniciado la traducción de los textos, por favor espere...")
-        traducciónRecursiva(text, data.texts, data.id);
-        //console.log(ficheros[data.id - 1], data.id, (data.id - 1));
-        funciones.escribirJson(JSON.stringify(text), ficheros[data.id]);
+        // Escribimos la nueva informacion en el json.
+        funciones.escribirJson(JSON.stringify(json_english), ficheros[data.id]);
+
+        // Calculamos cual ha sido el tiempo de ejecución.
+        funciones.tiempo_de_ejecucion(firstTime);
+
     });
 }

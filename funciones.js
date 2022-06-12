@@ -2,7 +2,7 @@ const fs = require('fs');
 
 /* Funciones globales */
 // Lectura de directorio
-function leerDirectorio(path) {
+function encontrar_ficheros_json(path) {
     let resp = fs.readdirSync(path, function (err, archivos) {
         if (err) {
             onError(err);
@@ -21,8 +21,11 @@ function escribirJson(json, name) {
             console.error(err)
             return
         }
-    });
-    lastTime = Date.now();
+    });    
+}
+
+function tiempo_de_ejecucion(firstTime) {
+    let lastTime = Date.now();
     console.log("Tiempo de ejecucion: ", secondsToTime(lastTime - firstTime));
 }
 /* Traducir tiempo */
@@ -50,8 +53,9 @@ function delay(time) {
 }
 
 module.exports = {
-    "leerDirectorio": leerDirectorio,
+    "encontrar_ficheros_json": encontrar_ficheros_json,
     "escribirJson": escribirJson,
     "delay": delay,
-    "secondsToTime": secondsToTime
+    "secondsToTime": secondsToTime,
+    "tiempo_de_ejecucion": tiempo_de_ejecucion
 }

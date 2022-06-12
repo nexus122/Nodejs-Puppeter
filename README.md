@@ -15,10 +15,14 @@ Pasos:
 7. Poco a poco veras que se van creando ficheros .json en la carpeta **json_traducidos**.
 
 ## 🐛 Bugs
-- En ficheros muy largos a partir de la linea 8000 no traduce bien, quizas tiene que ver con el tamaño del array o con el navegador que abre puppeter, que despues de mucho tiempo se buguee y haya que reiniciarlo.
+- Si se cargan muchos textos muy largos y el programa tarda mucho puede llegar a cortar o repetir textos
+- Si se han traducido X numeros de textos (Bastante Alto) La web nos dice que hemos excedido el tiempo y nos hace esperar unas horas.
 
 ## ✔️ Por hacer
 - [x] Ver como podemos reiniciar el navegador de puppeter
 - [x] Refactorizar el codigo y hacerlo mas optimo
-- [ ] Borrar un archivo de la capreta **jsons_pentientes_de_traduccion** al crear el archivo en **jsons_traducidos**
-- [ ] Hacer un test con multiples jsons largos para ver cuales son las limitaciónes.
+- [x] Hacer un test con multiples jsons largos para ver cuales son las limitaciónes.
+    - Se recomienda no hacer mas de 4 jsons en paralelo.
+## 🔝 Posibles mejoras
+- [ ] Borrar un archivo de la capreta **jsons_pentientes_de_traduccion** al crear el archivo en **jsons_traducidos**    
+- [ ] Crear un log en un archivo de texto para poder leer todas las lineas de como ha ido la ejecución o si ha habido un error.
