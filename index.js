@@ -11,6 +11,9 @@ const screenshots_del_proceso = false;
 /* Obtenemos la lista de ficheros del directorio */
 let ficheros = funciones.encontrar_ficheros_json("./jsons_pendientes_de_traduccion");
 
+// Eliminamos los ficheros que no sean un json
+ficheros = ficheros.filter((file)=> file.includes(".json"));
+
 /* Medición de tiempo para calcular cuanto ha tardado */
 let firstTime = Date.now(); // Tiempo inicial que se crea al cargar el script
 
@@ -196,7 +199,7 @@ for (var b = 0; b < ficheros.length; b++) {
         traducción_recursiva(json_english, data.texts, data.id);
 
         // Escribimos la nueva informacion en el json.
-        funciones.escribirJson(JSON.stringify(json_english), ficheros[data.id]);
+        funciones.escribir_json(JSON.stringify(json_english), ficheros[data.id]);
 
         // Calculamos cual ha sido el tiempo de ejecución.
         funciones.tiempo_de_ejecucion(firstTime);

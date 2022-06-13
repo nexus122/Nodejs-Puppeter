@@ -3,18 +3,23 @@ const fs = require('fs');
 /* Funciones globales */
 // Lectura de directorio
 function encontrar_ficheros_json(path) {
-    let resp = fs.readdirSync(path, function (err, archivos) {
+
+    let array_files = fs.readdirSync(path, function (err, archivo) {
         if (err) {
             onError(err);
             return;
         }
-        return archivos;
+
+        return archivo;        
+        
     });
-    return resp;
+
+    return array_files;
+
 }
 
 // Escritura de nuevos jsons
-function escribirJson(json, name) {
+function escribir_json(json, name) {
     //console.log("Nombre: ", name);
     fs.writeFile(`./json_traducidos/${name}`, json, (err) => {
         if (err) {
@@ -24,12 +29,12 @@ function escribirJson(json, name) {
     });    
 }
 
+/* Funcion que calcula el tiempo de ejecución */
 function tiempo_de_ejecucion(firstTime) {
-    let lastTime = Date.now();
-    if(firstTime != lastTime){    
-        console.log("Tiempo de ejecucion: ", secondsToTime(lastTime - firstTime));
-    }
+    let lastTime = Date.now();   
+    console.log("Tiempo de ejecucion: ", secondsToTime(lastTime - firstTime));    
 }
+
 /* Traducir tiempo */
 var secondsToTime = function (s) {
 
@@ -56,7 +61,7 @@ function delay(time) {
 
 module.exports = {
     "encontrar_ficheros_json": encontrar_ficheros_json,
-    "escribirJson": escribirJson,
+    "escribir_json": escribir_json,
     "delay": delay,
     "secondsToTime": secondsToTime,
     "tiempo_de_ejecucion": tiempo_de_ejecucion
