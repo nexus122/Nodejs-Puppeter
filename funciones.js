@@ -11,7 +11,7 @@ function encontrar_ficheros_json(path) {
         }
 
         return archivo;        
-        
+
     });
 
     return array_files;
@@ -20,7 +20,6 @@ function encontrar_ficheros_json(path) {
 
 // Escritura de nuevos jsons
 function escribir_json(json, name) {
-    //console.log("Nombre: ", name);
     fs.writeFile(`./json_traducidos/${name}`, json, (err) => {
         if (err) {
             console.error(err)

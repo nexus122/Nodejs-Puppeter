@@ -1,4 +1,4 @@
-# Traductor de JSONS con Node.js, Puppeter y DeepL
+# 📜 Traductor de JSONS con Node.js, Puppeter y DeepL
 Proyecto para construir un traductor de jsons.
 Pasos:
 1. Recorrer el json y crear un array con los textos
@@ -23,6 +23,8 @@ Pasos:
 - [x] Refactorizar el codigo y hacerlo mas optimo
 - [x] Hacer un test con multiples jsons largos para ver cuales son las limitaciónes.
     - Se recomienda no hacer mas de 4 jsons en paralelo.
+- [x] Parametrizar si se quiere un log y/o ScreenShoots.
+    - [x] Crear un Log escrito con todos los console.log para ver si hay errores.
+
 ## 🔝 Posibles mejoras
-- [ ] Borrar un archivo de la capreta **jsons_pentientes_de_traduccion** al crear el archivo en **jsons_traducidos**    
-- [ ] Crear un log en un archivo de texto para poder leer todas las lineas de como ha ido la ejecución o si ha habido un error.
+- [ ] Borrar un archivo de la capreta **jsons_pentientes_de_traduccion** al crear el archivo en **jsons_traducidos**

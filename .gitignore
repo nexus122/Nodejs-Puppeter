@@ -8,3 +8,5 @@ json_pendientes_de_traduccion/*
 # Esto es para que me respete las carpetas.
 !json_traducidos/.gitkeep
 !json_pendientes_de_traduccion/.gitkeep
+./node.log
+./screenShoots
