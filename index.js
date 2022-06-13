@@ -1,6 +1,12 @@
 /* 1. Cargamos librerias*/
 const puppeteer = require('puppeteer');
+const fs = require('fs');
+
+/* Funciones externas */
 const funciones = require("./funciones.js");
+
+/* Quieres que se hagan fotos del proceso? */
+const screenshots_del_proceso = false;
 
 /* Obtenemos la lista de ficheros del directorio */
 let ficheros = funciones.encontrar_ficheros_json("./jsons_pendientes_de_traduccion");
@@ -139,9 +145,15 @@ for (var b = 0; b < ficheros.length; b++) {
                     await page.waitForSelector(`${textarea_input}`);
                     // Vaciamos el texto
                     await page.evaluate(() => document.querySelector(".lmt__source_textarea").value = "");
-
-                    // Esto existe si queremos una foto de la pagina para ver si se ve bien.
-                    // await page.screenshot({ path: `./screenShoots/${ficheros[id].replace(".json", "")}_${i}.png` });
+                    
+                    if(screenshots_del_proceso){
+                        // Hacer una foto a cada traducción para comprobar que se haga bien.
+                        if (!fs.existsSync('./screenShoots/')){
+                            fs.mkdirSync('./screenShoots/')
+                        }
+                        
+                        await page.screenshot({ path: `./screenShoots/${ficheros[id].replace(".json", "")}_${i}.png` });
+                    }
 
                     // Escribimos el texto en ingles en el textarea
                     await page.type(`${textarea_input}`, texts[i]);

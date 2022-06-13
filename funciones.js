@@ -26,7 +26,9 @@ function escribirJson(json, name) {
 
 function tiempo_de_ejecucion(firstTime) {
     let lastTime = Date.now();
-    console.log("Tiempo de ejecucion: ", secondsToTime(lastTime - firstTime));
+    if(firstTime != lastTime){    
+        console.log("Tiempo de ejecucion: ", secondsToTime(lastTime - firstTime));
+    }
 }
 /* Traducir tiempo */
 var secondsToTime = function (s) {
