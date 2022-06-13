@@ -18,7 +18,7 @@ escribir_log = function(d) { //
 const funciones = require("./funciones.js");
 
 /* Quieres que se hagan fotos del proceso? */
-const screenshots_del_proceso = true;
+const screenshots_del_proceso = false;
 const necesitas_un_log = false;
 
 /* Obtenemos la lista de ficheros del directorio */
