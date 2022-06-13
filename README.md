@@ -14,6 +14,10 @@ Pasos:
 6. En la consola aparecera cada frase que se va traduciendo, el fichero al que pertenece, por cual va y cuantas quedan, ademas del porcentaje de completado!
 7. Poco a poco veras que se van creando ficheros .json en la carpeta **json_traducidos**.
 
+## 👉👈 Recomendaciónes
+1. Poner entre 4 / 5 textos a traducir, segun la potencia del ordenador y el tamaño de los json.
+    - Mas podrian hacer que el ordenador vaya lento o que la traducción vaya mal. 
+
 ## 🐛 Bugs
 - Si se cargan muchos textos muy largos y el programa tarda mucho puede llegar a cortar o repetir textos
 - Si se han traducido X numeros de textos (Bastante Alto) La web nos dice que hemos excedido el tiempo y nos hace esperar unas horas.
