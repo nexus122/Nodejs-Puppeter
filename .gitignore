@@ -1,5 +1,10 @@
+# Ignorar el nodemodules.
 node_modules/
-banquillo_json/
-json_traducidos/
-json_pendientes_de_traduccion/
-screenShoots/
+
+# Ignorar los jsons con los que se trabaja.
+json_traducidos/*
+json_pendientes_de_traduccion/*
+
+# Esto es para que me respete las carpetas.
+!json_traducidos/.gitkeep
+!json_pendientes_de_traduccion/.gitkeep

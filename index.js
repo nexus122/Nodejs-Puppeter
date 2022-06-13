@@ -3,7 +3,7 @@ const puppeteer = require('puppeteer');
 const funciones = require("./funciones.js");
 
 /* Obtenemos la lista de ficheros del directorio */
-let ficheros = funciones.encontrar_ficheros_json("./jsons_pendentes_de_traduccion");
+let ficheros = funciones.encontrar_ficheros_json("./jsons_pendientes_de_traduccion");
 
 /* Medición de tiempo para calcular cuanto ha tardado */
 let firstTime = Date.now(); // Tiempo inicial que se crea al cargar el script
@@ -14,7 +14,7 @@ for (var b = 0; b < ficheros.length; b++) {
     let aux = 0; // Contador de recursividades para saber que texto estamos traduciendo
     
     console.log("Iniciando la traducción del fichero: ", ficheros[b]);
-    const json_english = require(`./jsons_pendentes_de_traduccion/${ficheros[b]}`);
+    const json_english = require(`./jsons_pendientes_de_traduccion/${ficheros[b]}`);
 
     /* Array de textos no traducidos */
     let array_no_translated_texts = [];
