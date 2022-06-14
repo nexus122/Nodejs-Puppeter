@@ -4,6 +4,7 @@ node_modules/
 # Ignorar los jsons con los que se trabaja.
 json_traducidos/*
 json_pendientes_de_traduccion/*
+./node.log
 
 # Esto es para que me respete las carpetas.
 !json_traducidos/.gitkeep
