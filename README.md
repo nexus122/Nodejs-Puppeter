@@ -1,4 +1,5 @@
 # 📜 Traductor de JSONS con Node.js, Puppeter y DeepL
+
 Proyecto para construir un traductor de jsons.
 Pasos:
 1. Recorrer el json y crear un array con los textos
