@@ -1,4 +1,5 @@
 # 📜 Traductor de JSONS con Node.js, Puppeter y DeepL
+![image](https://user-images.githubusercontent.com/22988550/174480800-2d793894-251f-4e5a-a0ba-7387436eb363.png)
 
 Proyecto para construir un traductor de jsons.
 Pasos:
